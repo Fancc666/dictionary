@@ -7,7 +7,7 @@ function load_json(){
         return;
     }
     wdict = {};
-    out.innerText = "词库加载完毕";
+    out.innerText = "词库加载中...请耐心等待";
     setTimeout(function(){
         let s = document.createElement("script");
         s.src = "./"+ck;
