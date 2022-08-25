@@ -1,7 +1,7 @@
 /***
  * 作者：FANCC
  * 时间：2022年8月25日
- * 版本1.2
+ * 版本1.3
  * 字典程序部分
  * 离线版本需要字库，默认自带专八z8.json字库和高中词汇gz.json
  * 新建字库结构应当同https://github.com/kajweb/dict 的json字库
@@ -66,7 +66,7 @@ function search(){
         op += "读音<br>";
         op += duyin(response['dictionary'][wdict[s]]['content']['word']['content'])+"<br><br>";
         op += "例句<br>";
-        op += liju(response['dictionary'][wdict[s]]['content']['word']['content']['sentence']['sentences'])+"<br><br>";
+        op += liju(response['dictionary'][wdict[s]]['content']['word']['content']['sentence'])+"<br><br>";
         op += "短语<br>";
         op += duanyu(response['dictionary'][wdict[s]]['content']['word']['content']['phrase'])+"<br><br>";
         if (debug){
@@ -100,6 +100,10 @@ function duyin(i){
     return "/"+i+"/";
 }
 function liju(i){
+    if (i === undefined){
+        return "未记录";
+    }
+    i = i['sentences'];
     let r = "";
     for (let x=0;x<i.length;x++){
         r += i[x]['sContent'];
