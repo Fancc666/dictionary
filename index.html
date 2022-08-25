@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>离线词典-FANCC</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #container{
+            width: 80%;
+            margin: 30px auto;
+        }
+        #out{
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>离线词典</h1>
+        <p>默认词库有高考词汇gz.json和专八词汇z8.json，更多词汇库请自行制作</p>
+        <input type="text" id="ck" placeholder="输入使用的词库" value="gz.json">
+        <button onclick="load_json()">加载</button>
+        <br>
+        <input type="text" id="in" placeholder="输入要查询的单词">
+        <button onclick="search()">查询</button>
+        <p id="out"></p>
+        <br>
+        <br>
+        <p>By FANCC.</p>
+    </div>
+</body>
+<script type="text/javascript">
+    function no_js(){
+        alert("主程序缺失");
+    }
+</script>
+<script src="./programme.js" onerror="no_js()"></script>
+</html>
