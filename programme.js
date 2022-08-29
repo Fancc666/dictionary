@@ -92,8 +92,9 @@ function shiyi(i){
         r += i[x]['pos'] + ".";
         r += i[x]['tranCn'];
         if (i[x]['tranOther'] !== undefined){
-            r += "(" + i[x]['tranOther'] + ");";
+            r += "(" + i[x]['tranOther'] + ")";
         }
+        r += ";";
         if (x !== i.length - 1){
             r += "<br>";
         }
