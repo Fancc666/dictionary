@@ -1,7 +1,7 @@
 /***
  * 作者：FANCC
  * 时间：2022年8月25日
- * 版本1.3
+ * 版本1.3.3
  * 字典程序部分
  * 离线版本需要字库，默认自带专八z8.json字库和高中词汇gz.json
  * 新建字库结构应当同https://github.com/kajweb/dict 的json字库
@@ -12,7 +12,7 @@
  * 转载不需要告诉我随便用就好，如果你愿意添上我的名字FANCC我会很高兴
  * 开源https://github.com/Fancc666/dictionary
  */
-let response;
+let response = {};
 let wdict = {};
 let out = document.querySelector("#out");
 let stat = false;
@@ -43,11 +43,17 @@ function load_json(){
 }
 // 字库定位
 function loadWords(){
+    if (response["dictionary"] === undefined){
+        out.innerText = "词库已损坏";
+        return
+    }
+    let counter = 0;
     for (let wjnum=0;wjnum < response['dictionary'].length; wjnum++){
         let wrd = response['dictionary'][wjnum]['headWord'];
         wdict[wrd] = wjnum;
+        counter++;
     }
-    out.innerText = "词库加载完毕";
+    out.innerText = "词库加载完毕-"+response["dictionary"][0]["bookId"]+"词库词数"+String(counter);
     stat = true;
 }
 // 查询
@@ -84,8 +90,10 @@ function shiyi(i){
     let r = "";
     for (let x=0;x<i.length;x++){
         r += i[x]['pos'] + ".";
-        r += i[x]['tranCn'] + "(";
-        r += i[x]['tranOther'] + ");";
+        r += i[x]['tranCn'];
+        if (i[x]['tranOther'] !== undefined){
+            r += "(" + i[x]['tranOther'] + ");";
+        }
         if (x !== i.length - 1){
             r += "<br>";
         }
