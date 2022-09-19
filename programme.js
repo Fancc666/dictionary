@@ -1,7 +1,9 @@
 /***
  * 作者：FANCC
- * 时间：2022年8月25日
- * 版本1.3.3
+ * 时间：2022年9月18日
+ * 版本1.4.1
+ * 本版本更新：模糊匹配关键词 中文查词
+ * 
  * 字典程序部分
  * 离线版本需要字库，默认自带专八z8.json字库和高中词汇gz.json
  * 新建字库结构应当同https://github.com/kajweb/dict 的json字库
@@ -17,6 +19,19 @@ let wdict = {};
 let out = document.querySelector("#out");
 let stat = false;
 let debug = false;
+let pronounce_close = {
+    "a": ["e"],
+    "e": ["a", "i"],
+    "i": ["e"],
+    "z": ["s"],
+    "s": ["z"],
+    "i": ["y"],
+    "y": ["i"],
+    "g": ["k"],
+    "b": ["p"],
+    "n": ["m"],
+    "m": ["n"]
+}
 // 加载字库
 function load_json(){
     let ck = document.querySelector("#ck").value;
@@ -24,7 +39,7 @@ function load_json(){
         return;
     }
     wdict = {};
-    out.innerText = "词库加载中...请耐心等待";
+    out_text("词库加载中...请耐心等待");
     stat = false;
     setTimeout(function(){
         let s = document.createElement("script");
@@ -37,14 +52,14 @@ function load_json(){
         };
         s.onerror = function(){
             s.remove();
-            out.innerText = "词库不存在";
+            out_text("词库不存在");
         };
     }, 0);
 }
 // 字库定位
 function loadWords(){
     if (response["dictionary"] === undefined){
-        out.innerText = "词库已损坏";
+        out_text("词库已损坏");
         return
     }
     let counter = 0;
@@ -53,17 +68,24 @@ function loadWords(){
         wdict[wrd] = wjnum;
         counter++;
     }
-    out.innerText = "词库加载完毕-"+response["dictionary"][0]["bookId"]+"词库词数"+String(counter);
+    out_text("词库加载完毕-"+response["dictionary"][0]["bookId"]+"词库词数"+String(counter));
     stat = true;
 }
 // 查询
 function search(){
     if (!stat){
         if (out.innerText === ""){
-            out.innerText = "请先加载词库";
+            out_text("请先加载词库");
         }
         return;
     }
+    if (document.getElementsByName("mode")[0].checked){
+        search_by_en();
+    }else{
+        search_by_cn();
+    }
+}
+function search_by_en(){
     let s = document.querySelector("#in").value;
     if (wdict[s] !== undefined){
         let op = "";
@@ -79,10 +101,73 @@ function search(){
             op += "源文件<br>";
             op += JSON.stringify(response['dictionary'][wdict[s]]);
         }
-        out.innerHTML = op;
+        out_html(op);
     }else{
-        out.innerText = "查无此词";
+        blur_search();
     }
+}
+function blur_search(){
+    let s = document.querySelector("#in").value;
+    let results = [];
+    for (let w in wdict){
+        let result = {};
+        result.word = w;
+        let clo = 1;
+        for (let x=0;x<Math.min(w.length, s.length);x++){
+            if (Math.abs(w.length - s.length) > 3){
+                clo *= 0;
+                break;
+            }
+            if (x === 0 && w[x] !== s[x]){
+                clo *= 0;
+                break;
+            }
+            clo *= w[x] === s[x] ? 1 : p_close_check(s[x], w[x]);
+        }
+        result.clo = clo;
+        results.push(result);
+    }
+    results = results.sort(function(a, b){
+        return b.clo - a.clo;
+    }).splice(0,10);
+    if (results[0].clo <= 0.25){
+        out_text("查无此词");
+        return
+    }
+    let o = "你可能要搜的词?<br>";
+    for (let r=0;r<results.length;r++){
+        o += results[r].word;
+        o += "<br>";
+    }
+    out_html(o);
+}
+function p_close_check(s, w){
+    if (pronounce_close[s] !== undefined){
+        if (pronounce_close[s].includes(w)){
+            return 0.8;
+        }
+        return 0.5;
+    }else{
+        return 0.5;
+    }
+}
+function search_by_cn(){
+    let s = document.querySelector("#in").value;
+    if (s === ""){
+        return
+    }
+    let en_dict = [];
+    for (let count = 0;count < response.dictionary.length;count++){
+        if (shiyi(response['dictionary'][count]['content']['word']['content']['trans']).indexOf(s) > -1){
+            en_dict.push(response['dictionary'][count]['headWord']);
+        }
+    }
+    en_dict = en_dict.splice(0, 10);
+    if (en_dict.length === 0){
+        out_text("没有与之对应的英文词汇");
+        return
+    }
+    out_html("可能中文释义与之相对的是如下词汇<br>"+en_dict.join("<br>"));
 }
 // 其他方法
 // 格式化 释义，读音，例句，短语
@@ -137,4 +222,10 @@ function duanyu(i){
         }
     }
     return r;
+}
+function out_text(text){
+    out.innerText = text;
+}
+function out_html(text){
+    out.innerHTML = text;
 }
