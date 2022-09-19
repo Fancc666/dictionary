@@ -25,6 +25,16 @@
         <input type="text" id="ck" placeholder="输入使用的词库" value="gz.json">
         <button onclick="load_json()">加载</button>
         <br>
+        <br>
+        <label>
+            英文模式
+            <input type="radio" checked name="mode">
+        </label>
+        <label>
+            中文模式
+            <input type="radio" name="mode">
+        </label>
+        <br>
         <input type="text" id="in" placeholder="输入要查询的单词">
         <button onclick="search()">查询</button>
         <p id="out"></p>
