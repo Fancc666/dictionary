@@ -1,6 +1,6 @@
 # dictionary
 ## 简介
-dictionary是一个离线词库，专为没有联网的电脑打造
+dictionary是一个离线词典，专为没有联网的电脑打造
 
 dictionary运行需要主文件index.html，程序文件programme.js，和词库文件
 
